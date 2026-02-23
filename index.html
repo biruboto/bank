@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#fff7fb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="BANK!" />
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <title>BANK!</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="top-strip">
+        <section class="card top-card top-card-bank">
+          <div class="bank-lockup">
+            <div class="bank-lockup-scale">
+              <div class="bank-lockup-unit">
+                <div class="bank-art bank-art-piggy" aria-hidden="true"></div>
+                <div id="bankTotalLabel" class="bank-total-display bank-total-top">$0</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="card top-card top-card-round">
+          <div class="round-title">ROUND</div>
+          <div id="roundLabel" class="round-value">--/--</div>
+        </section>
+      </header>
+
+      <section id="setupCard" class="card">
+        <div class="setup-header">
+          <h2>Game Setup</h2>
+          <button id="themeBtn" type="button" aria-label="Theme" title="Theme">
+            <i class="fa-solid fa-heart" aria-hidden="true"></i>
+          </button>
+        </div>
+        <form id="setupForm" class="stack">
+          <label for="playerNameInput">Players</label>
+          <div class="setup-player-entry">
+            <input id="playerNameInput" type="text" placeholder="Enter player name" autocomplete="off" />
+            <button id="addPlayerBtn" type="button" aria-label="Add player">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            </button>
+          </div>
+          <ul id="setupPlayerList" class="setup-player-list" aria-live="polite"></ul>
+
+          <label>Rounds</label>
+          <div id="roundOptions" class="round-options" role="group" aria-label="Round count">
+            <button type="button" class="round-option" data-round="10" aria-pressed="false">10</button>
+            <button type="button" class="round-option" data-round="15" aria-pressed="false">15</button>
+            <button type="button" class="round-option active" data-round="20" aria-pressed="true">20</button>
+          </div>
+          <input id="roundCount" type="hidden" value="20" />
+
+          <button type="submit">Start Game</button>
+        </form>
+      </section>
+
+      <section id="gameCard" class="card hidden">
+        <div id="turnBanner" class="turn-banner">-</div>
+
+        <div id="rollPad" class="roll-pad"></div>
+
+        <div class="divider"></div>
+
+        <h3 class="centered-heading">BANK!</h3>
+        <div id="bankButtons" class="row"></div>
+
+        <div class="divider"></div>
+
+        <h3 class="centered-heading">Scoreboard</h3>
+        <ol id="scoreList" class="scores"></ol>
+
+        <div class="divider"></div>
+
+        <div id="eventLogWrap" class="hidden">
+          <h3>Events</h3>
+          <ul id="eventLog" class="events"></ul>
+        </div>
+
+        <div class="row actions">
+          <button id="undoBtn" type="button">Undo</button>
+          <button id="toggleLogBtn" type="button">Show Log</button>
+          <button id="newGameBtn" type="button" class="danger">New Game</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

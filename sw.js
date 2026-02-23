@@ -1,10 +1,9 @@
-const CACHE_NAME = "dice-bank-v1";
+const CACHE_NAME = "dice-bank-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
@@ -27,6 +26,14 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") {
+    return;
+  }
+  const requestUrl = new URL(event.request.url);
+  const isManifest = requestUrl.pathname.endsWith("/manifest.webmanifest");
+  const isServiceWorker = requestUrl.pathname.endsWith("/sw.js");
+
+  if (isManifest || isServiceWorker) {
+    event.respondWith(fetch(event.request));
     return;
   }
 

@@ -198,6 +198,7 @@ function createEmptyState() {
     bankTotal: 0,
     rollCountInRound: 0,
     currentPlayerIndex: 0,
+    nextRoundStarterIndex: 0,
     roundEnded: false,
     players: [],
     eventHistory: []
@@ -221,16 +222,32 @@ function createInitialGame(names, totalRounds) {
     bankTotal: 0,
     rollCountInRound: 0,
     currentPlayerIndex: 0,
+    nextRoundStarterIndex: players.length > 1 ? 1 : 0,
     roundEnded: false,
     players,
     eventHistory: ["Round 1 started."]
   };
 }
 
-function resetRoundState() {
+function getNextPlayerIndex(index) {
+  if (!Array.isArray(state.players) || state.players.length === 0) {
+    return 0;
+  }
+  return (index + 1) % state.players.length;
+}
+
+function normalizePlayerIndex(index, playerCount = state.players.length) {
+  if (!playerCount || !Number.isFinite(index)) {
+    return 0;
+  }
+  return ((index % playerCount) + playerCount) % playerCount;
+}
+
+function resetRoundState(startingPlayerIndex = state.nextRoundStarterIndex) {
   state.bankTotal = 0;
   state.rollCountInRound = 0;
-  state.currentPlayerIndex = 0;
+  state.currentPlayerIndex = normalizePlayerIndex(startingPlayerIndex);
+  state.nextRoundStarterIndex = getNextPlayerIndex(state.currentPlayerIndex);
   state.roundEnded = false;
   state.players.forEach((player) => {
     player.bankedThisRound = false;
@@ -293,6 +310,7 @@ function applyRoll(sum) {
   }
 
   const isSpecialWindow = state.rollCountInRound < 3;
+  state.nextRoundStarterIndex = getNextPlayerIndex(state.currentPlayerIndex);
 
   state.rollCountInRound += 1;
 
@@ -323,6 +341,7 @@ function applyDoubleRoll() {
     return;
   }
 
+  state.nextRoundStarterIndex = getNextPlayerIndex(state.currentPlayerIndex);
   state.rollCountInRound += 1;
   state.bankTotal *= 2;
   pendingBankFx = "burst";
@@ -576,6 +595,15 @@ function loadState() {
     return {
       ...createEmptyState(),
       ...parsed,
+      nextRoundStarterIndex:
+        typeof parsed.nextRoundStarterIndex === "number"
+          ? normalizePlayerIndex(
+              parsed.nextRoundStarterIndex,
+              Array.isArray(parsed.players) ? parsed.players.length : 0
+            )
+          : Array.isArray(parsed.players) && parsed.players.length > 0
+            ? normalizePlayerIndex(Number(parsed.currentPlayerIndex) + 1, parsed.players.length)
+            : 0,
       players: Array.isArray(parsed.players)
         ? parsed.players.map((player) => ({
             ...player,
@@ -750,7 +778,7 @@ function startNextRoundFromBanner() {
 
   pushUndoSnapshot();
   state.round += 1;
-  resetRoundState();
+  resetRoundState(state.nextRoundStarterIndex);
   addEvent(`Round ${state.round} started.`);
   saveState(state);
   render();
